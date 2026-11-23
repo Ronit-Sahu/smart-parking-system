@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4 class="mb-3">Admin Dashboard</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card card-body">
+    <div class="small text-muted">Total revenue</div>
+    <h3>₹{{ rev.t }}</h3>
+    <div class="small">{{ rev.n }} payments</div>
+  </div></div>
+</div>
+
+<h5>Lot occupancy</h5>
+<table class="table table-sm bg-white mb-4">
+  <tr><th>Lot</th><th>Total slots</th><th>Occupied</th><th>Maintenance</th></tr>
+  {% for o in occ %}
+  <tr><td>{{ o.lot_name }}</td><td>{{ o.total }}</td><td>{{ o.occupied or 0 }}</td><td>{{ o.maint or 0 }}</td></tr>
+  {% endfor %}
+</table>
+
+<h5>Slots</h5>
+<table class="table table-sm bg-white align-middle mb-4">
+  {% for s in slots %}
+  <tr>
+    <td>{{ s.lot_name }}</td><td>{{ s.slot_no }}</td><td>{{ s.status }}</td>
+    <td>
+      <form class="d-flex gap-1" method="post">
+        <input type="hidden" name="slot_id" value="{{ s.slot_id }}">
+        <select class="form-select form-select-sm" name="status">
+          <option>AVAILABLE</option><option>MAINTENANCE</option><option>OCCUPIED</option>
+        </select>
+        <button class="btn btn-sm btn-outline-dark">Set</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h5>Recent status log</h5>
+<ul class="small">
+  {% for g in logs %}<li>{{ g.changed_on }} — {{ g.slot_no }}: {{ g.old_status }} → {{ g.new_status }}</li>{% endfor %}
+</ul>
+{% endblock %}

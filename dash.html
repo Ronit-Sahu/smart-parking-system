@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card card-body">
+      <h5>Meri Vehicles</h5>
+      <ul class="small">
+        {% for v in veh %}<li>{{ v.reg_no }} ({{ v.vehicle_type }})</li>{% else %}<li>Abhi koi vehicle nahi.</li>{% endfor %}
+      </ul>
+      <form method="post">
+        <input class="form-control mb-2" name="reg_no" placeholder="KA01AB1234" required>
+        <select class="form-select mb-2" name="vehicle_type">
+          <option value="CAR">Car</option>
+          <option value="BIKE">Bike</option>
+        </select>
+        <button class="btn btn-outline-primary btn-sm">Add vehicle</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <h5>Meri Bookings</h5>
+    <table class="table table-sm bg-white align-middle">
+      <tr><th>Vehicle</th><th>Lot / Slot</th><th>From → To</th><th>Status</th><th>Action</th></tr>
+      {% for b in bks %}
+      <tr>
+        <td>{{ b.reg_no }}</td>
+        <td>{{ b.lot_name }} / {{ b.slot_no }}</td>
+        <td class="small">{{ b.start_time }}<br>{{ b.end_time }}</td>
+        <td>{{ b.status }}</td>
+        <td>
+          {% if b.status == 'BOOKED' %}
+            <form class="d-inline" method="post" action="{{ url_for('bstat', bid=b.booking_id, a='checkin') }}">
+              <button class="btn btn-sm btn-primary">Check-in</button></form>
+            <form class="d-inline" method="post" action="{{ url_for('bstat', bid=b.booking_id, a='cancel') }}">
+              <button class="btn btn-sm btn-outline-danger">Cancel</button></form>
+          {% elif b.status == 'CHECKED_IN' %}
+            <form class="d-flex gap-1" method="post" action="{{ url_for('bstat', bid=b.booking_id, a='checkout') }}">
+              <select class="form-select form-select-sm" name="mode">
+                <option>CASH</option><option>UPI</option><option>CARD</option>
+              </select>
+              <button class="btn btn-sm btn-dark">Checkout &amp; pay</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="text-muted">Koi booking nahi hai.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

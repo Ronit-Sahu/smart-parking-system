@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block body %}
+<h4 class="mb-3">Parking Search</h4>
+{% if not veh %}
+  <div class="alert alert-warning py-2">Pehle Dashboard pe vehicle add karo, phir book kar paoge.</div>
+{% endif %}
+<form class="row g-2 mb-4" method="get">
+  <div class="col-md-3"><input class="form-control" type="datetime-local" name="start" value="{{ f.start or '' }}" required></div>
+  <div class="col-md-3"><input class="form-control" type="datetime-local" name="end" value="{{ f.end or '' }}" required></div>
+  <div class="col-md-2">
+    <select class="form-select" name="type">
+      <option value="">Any type</option>
+      <option value="CAR" {{ 'selected' if f.type == 'CAR' }}>Car</option>
+      <option value="BIKE" {{ 'selected' if f.type == 'BIKE' }}>Bike</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="lot">
+      <option value="0">All lots</option>
+      {% for l in lots %}
+        <option value="{{ l.lot_id }}" {{ 'selected' if f.lot|string == l.lot_id|string }}>{{ l.lot_name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-primary w-100">Search</button></div>
+</form>
+
+{% if rows %}
+<table class="table table-sm bg-white align-middle">
+  <tr><th>Lot</th><th>Slot</th><th>Type</th><th>Rate/hr</th><th>Book with vehicle</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r.lot_name }}</td><td>{{ r.slot_no }}</td><td>{{ r.slot_type }}</td><td>₹{{ r.rate_per_hour }}</td>
+    <td>
+      <form class="d-flex gap-1" method="post" action="{{ url_for('book') }}">
+        <input type="hidden" name="slot_id" value="{{ r.slot_id }}">
+        <input type="hidden" name="start" value="{{ f.start }}">
+        <input type="hidden" name="end" value="{{ f.end }}">
+        <select class="form-select form-select-sm" name="vehicle_id" required>
+          {% for v in veh %}<option value="{{ v.vehicle_id }}">{{ v.reg_no }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-sm btn-success">Book</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% elif f.start and f.end %}
+  <p class="text-muted">Is time range me koi free slot nahi hai.</p>
+{% endif %}
+{% endblock %}

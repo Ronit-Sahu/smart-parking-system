@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="col-md-4 mx-auto card card-body">
+  <h4 class="mb-3">{{ 'Register' if mode == 'register' else 'Login' }}</h4>
+  <form method="post">
+    {% if mode == 'register' %}
+      <input class="form-control mb-2" name="name" placeholder="Full name" required>
+      <input class="form-control mb-2" name="phone" placeholder="Phone">
+    {% endif %}
+    <input class="form-control mb-2" type="email" name="email" placeholder="Email" required>
+    <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
+    <button class="btn btn-primary w-100">{{ 'Register' if mode == 'register' else 'Login' }}</button>
+  </form>
+  <p class="small mt-3 mb-0">
+    {% if mode == 'register' %}Account hai? <a href="{{ url_for('login') }}">Login karo</a>
+    {% else %}Naya user? <a href="{{ url_for('register') }}">Register karo</a>{% endif %}
+  </p>
+</div>
+{% endblock %}
